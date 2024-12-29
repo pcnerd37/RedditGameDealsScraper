@@ -34,7 +34,7 @@ public class RedditGameDealsScraper
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
 
             // Send a GET request to the subreddit's API and obtain its JSON response.
-            HttpResponseMessage response = await httpClient.GetAsync("https://www.reddit.com/r/GameDeals/new.json?limit=100");
+            HttpResponseMessage response = await httpClient.GetAsync("https://www.reddit.com/r/GameDeals/new.json?limit=20");
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -46,6 +46,12 @@ public class RedditGameDealsScraper
             {
                 string title = (string)post["data"]["title"];
                 string url = (string)post["data"]["url"];
+                string linkFlairText = (string)post["data"]["link_flair_text"];
+
+                if (linkFlairText != null && linkFlairText.ToLower().Contains("expired"))
+                {
+                    continue;
+                }
 
                 if (title.ToLower().Contains("free") || title.ToLower().Contains("giveaway") || title.ToLower().Contains("100%"))
                 {
